@@ -6,7 +6,7 @@ module.exports = {
     nombre: { type: 'string' },
     direccion: { type: 'string' },
     telefono: { type: 'string' },
-    email: { type: 'string', email: true },
+    email: { type: 'string', isEmail: true },
     es_cliente: { type: 'boolean', defaultsTo: true },
     es_empleado: { type: 'boolean', defaultsTo: false },
 

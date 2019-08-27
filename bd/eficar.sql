@@ -2,15 +2,15 @@
 Navicat MariaDB Data Transfer
 
 Source Server         : local
-Source Server Version : 100406
+Source Server Version : 100407
 Source Host           : localhost:3306
 Source Database       : taller2
 
 Target Server Type    : MariaDB
-Target Server Version : 100406
+Target Server Version : 100407
 File Encoding         : 65001
 
-Date: 2019-07-24 16:40:03
+Date: 2019-08-26 21:12:22
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -50,16 +50,15 @@ CREATE TABLE `asignacion` (
   `operador` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
-  UNIQUE KEY `tarea` (`tarea`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+  UNIQUE KEY `tarea` (`tarea`),
+  KEY `operador` (`operador`),
+  CONSTRAINT `operador` FOREIGN KEY (`operador`) REFERENCES `persona` (`id`),
+  CONSTRAINT `tarea` FOREIGN KEY (`tarea`) REFERENCES `ordenproducto` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of asignacion
 -- ----------------------------
-INSERT INTO `asignacion` VALUES ('1563461846384', '1563461873922', '1', '1', '0', '2019-7-18 10:0:0', '1563488421360', '1563488445170', '43', '2');
-INSERT INTO `asignacion` VALUES ('1563554759370', '1563977997774', '2', '4', '1', '2019-7-20 8:0:0', '1564004279808', '1564004329214', '44', '2');
-INSERT INTO `asignacion` VALUES ('1563566773850', '1564002741612', '5', '4', '1', '2019-7-20 9:0:0', '1564004312365', '1564004332298', '45', '2');
-INSERT INTO `asignacion` VALUES ('1563977100684', '1564003182481', '6', '4', '1', '2019-7-24 8:30:0', '1564004321671', '1564004335089', '46', '2');
 
 -- ----------------------------
 -- Table structure for carrito
@@ -73,14 +72,16 @@ CREATE TABLE `carrito` (
   `vehiculo` int(11) DEFAULT NULL,
   `tipoProducto` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+  UNIQUE KEY `id` (`id`),
+  KEY `vehiculocarrito` (`vehiculo`),
+  KEY `tipoproducto` (`tipoProducto`),
+  CONSTRAINT `tipoproducto` FOREIGN KEY (`tipoProducto`) REFERENCES `tipoproducto` (`id`),
+  CONSTRAINT `vehiculocarrito` FOREIGN KEY (`vehiculo`) REFERENCES `vehiculo` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of carrito
 -- ----------------------------
-INSERT INTO `carrito` VALUES ('1554173867044', '1563549700805', '1', '5', null, null);
-INSERT INTO `carrito` VALUES ('1554173876685', '1563549703310', '2', '5', null, null);
 
 -- ----------------------------
 -- Table structure for categoria
@@ -95,12 +96,11 @@ CREATE TABLE `categoria` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of categoria
 -- ----------------------------
-INSERT INTO `categoria` VALUES ('1550070563607', '1550070563607', '1', '1', 'lavados');
 
 -- ----------------------------
 -- Table structure for cotizacion
@@ -112,9 +112,14 @@ CREATE TABLE `cotizacion` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `fecha_emision` varchar(255) DEFAULT NULL,
   `cliente` int(11) DEFAULT NULL,
+  `vehiculo` int(11) DEFAULT NULL,
   `vendedor` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+  UNIQUE KEY `id` (`id`),
+  KEY `clientecotizacion` (`cliente`),
+  KEY `vehiculocotizacion` (`vehiculo`),
+  CONSTRAINT `clientecotizacion` FOREIGN KEY (`cliente`) REFERENCES `persona` (`id`),
+  CONSTRAINT `vehiculocotizacion` FOREIGN KEY (`vehiculo`) REFERENCES `vehiculo` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -132,13 +137,18 @@ CREATE TABLE `cotizacionproducto` (
   `porsentaje_iva` double DEFAULT NULL,
   `cantidad` double DEFAULT NULL,
   `precio` double DEFAULT NULL,
+  `tiempo_estandar` double DEFAULT NULL,
   `porcentaje_descuento` double DEFAULT NULL,
   `descripcion` varchar(255) DEFAULT NULL,
   `base_cero` double DEFAULT NULL,
   `cotizacion` int(11) DEFAULT NULL,
   `variante` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+  UNIQUE KEY `id` (`id`),
+  KEY `cotizacion` (`cotizacion`),
+  KEY `variantecotizacion` (`variante`),
+  CONSTRAINT `cotizacion` FOREIGN KEY (`cotizacion`) REFERENCES `cotizacion` (`id`),
+  CONSTRAINT `variantecotizacion` FOREIGN KEY (`variante`) REFERENCES `tipoproducto` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -156,7 +166,9 @@ CREATE TABLE `foto` (
   `url` varchar(255) DEFAULT NULL,
   `producto` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+  UNIQUE KEY `id` (`id`),
+  KEY `productofoto` (`producto`),
+  CONSTRAINT `productofoto` FOREIGN KEY (`producto`) REFERENCES `producto` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -181,30 +193,7 @@ CREATE TABLE `marca` (
 -- ----------------------------
 -- Records of marca
 -- ----------------------------
-INSERT INTO `marca` VALUES ('1551110914650', '1551110914650', '1', '1', 'chevrolet');
-
--- ----------------------------
--- Table structure for marcaproducto
--- ----------------------------
-DROP TABLE IF EXISTS `marcaproducto`;
-CREATE TABLE `marcaproducto` (
-  `createdAt` bigint(20) DEFAULT NULL,
-  `updatedAt` bigint(20) DEFAULT NULL,
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `estado` tinyint(1) DEFAULT NULL,
-  `nombre` varchar(255) COLLATE utf8_spanish_ci DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `id` (`id`) USING BTREE,
-  UNIQUE KEY `nombre` (`nombre`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Records of marcaproducto
--- ----------------------------
-INSERT INTO `marcaproducto` VALUES ('1548602096063', '1548602096063', '1', '1', 'chevrolet');
-INSERT INTO `marcaproducto` VALUES ('1548602103492', '1548602103492', '2', '1', 'mazda');
-INSERT INTO `marcaproducto` VALUES ('1548602115892', '1548602115892', '3', '1', 'kia');
-INSERT INTO `marcaproducto` VALUES ('1548602130762', '1548602130762', '4', '1', 'audi');
+INSERT INTO `marca` VALUES ('1566870215871', '1566870215871', '1', '1', 'Chevrolet');
 
 -- ----------------------------
 -- Table structure for modelo
@@ -220,14 +209,17 @@ CREATE TABLE `modelo` (
   `marca` int(11) DEFAULT NULL,
   `tipo` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+  UNIQUE KEY `id` (`id`),
+  KEY `marca` (`marca`),
+  KEY `tipoid` (`tipo`),
+  CONSTRAINT `marca` FOREIGN KEY (`marca`) REFERENCES `marca` (`id`),
+  CONSTRAINT `tipoid` FOREIGN KEY (`tipo`) REFERENCES `tipo` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of modelo
 -- ----------------------------
-INSERT INTO `modelo` VALUES ('1563549843750', '1563549843750', '3', '1', 'Susuki fors 3000', '2010', '1', '3');
-INSERT INTO `modelo` VALUES ('1563549875415', '1563549875415', '4', '1', 'Gan vitara', '1992', '1', '4');
+INSERT INTO `modelo` VALUES ('1566870270761', '1566870270761', '1', '1', 'Modelo 1', '1990', '1', '2');
 
 -- ----------------------------
 -- Table structure for motivo
@@ -241,14 +233,11 @@ CREATE TABLE `motivo` (
   `descripcion` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of motivo
 -- ----------------------------
-INSERT INTO `motivo` VALUES ('1551144220021', '1551144220021', '1', '1', 'falta de repuestos');
-INSERT INTO `motivo` VALUES ('1551144269150', '1551144296794', '2', '1', 'otro trabajo 2');
-INSERT INTO `motivo` VALUES ('1554171015418', '1554171015418', '3', '1', 'Almuerzo');
 
 -- ----------------------------
 -- Table structure for ordenproducto
@@ -268,15 +257,16 @@ CREATE TABLE `ordenproducto` (
   `orden` int(11) DEFAULT NULL,
   `variante` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8;
+  UNIQUE KEY `id` (`id`),
+  KEY `orden` (`orden`),
+  KEY `variante` (`variante`),
+  CONSTRAINT `orden` FOREIGN KEY (`orden`) REFERENCES `ordentrabajo` (`id`),
+  CONSTRAINT `variante` FOREIGN KEY (`variante`) REFERENCES `tipoproducto` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of ordenproducto
 -- ----------------------------
-INSERT INTO `ordenproducto` VALUES ('1563553987602', '1563568778361', '44', '12', '1', '15', '3600', '0', '', '0', '3', '11');
-INSERT INTO `ordenproducto` VALUES ('1563566718805', '1563568778363', '45', '12', '1', '15', '3600', '0', '', '0', '3', '11');
-INSERT INTO `ordenproducto` VALUES ('1563977100655', '1563977100655', '46', '12', '1', '20', '7200', '0', '', '0', '4', '12');
 
 -- ----------------------------
 -- Table structure for ordentrabajo
@@ -291,14 +281,16 @@ CREATE TABLE `ordentrabajo` (
   `vehiculo` int(11) DEFAULT NULL,
   `vendedor` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+  UNIQUE KEY `id` (`id`),
+  KEY `cliente` (`cliente`),
+  KEY `vehiculo` (`vehiculo`),
+  CONSTRAINT `cliente` FOREIGN KEY (`cliente`) REFERENCES `persona` (`id`),
+  CONSTRAINT `vehiculo` FOREIGN KEY (`vehiculo`) REFERENCES `vehiculo` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of ordentrabajo
 -- ----------------------------
-INSERT INTO `ordentrabajo` VALUES ('1563553986504', '1563568776871', '3', '2019-07-19 11:33:06.504', '5', '7', null);
-INSERT INTO `ordentrabajo` VALUES ('1563977099638', '1563977099638', '4', '2019-07-24 09:04:59.638', '4', '6', null);
 
 -- ----------------------------
 -- Table structure for pausa
@@ -313,14 +305,16 @@ CREATE TABLE `pausa` (
   `asignacion` int(11) DEFAULT NULL,
   `motivo` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+  UNIQUE KEY `id` (`id`),
+  KEY `asignacion` (`asignacion`),
+  KEY `motivo` (`motivo`),
+  CONSTRAINT `asignacion` FOREIGN KEY (`asignacion`) REFERENCES `asignacion` (`id`),
+  CONSTRAINT `motivo` FOREIGN KEY (`motivo`) REFERENCES `motivo` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of pausa
 -- ----------------------------
-INSERT INTO `pausa` VALUES (null, null, '1', '1564000344365', '1564000348595', '6', '3');
-INSERT INTO `pausa` VALUES (null, null, '2', '1564000397994', '1564000402152', '6', '3');
 
 -- ----------------------------
 -- Table structure for persona
@@ -350,29 +344,9 @@ CREATE TABLE `persona` (
 -- ----------------------------
 -- Records of persona
 -- ----------------------------
-INSERT INTO `persona` VALUES ('1549763582107', '1551110251207', '2', '1', '1723713556', 'Gabriel Salazar', 'quito sur', '2456123', 'gabrielsalazar@outlook.com', '0', '1', '1', '1', '1', '1');
-INSERT INTO `persona` VALUES ('1550070826768', '1561300562006', '4', '1', '1231321321321', 'Andres Ortiz', '', '', '', '1', '0', '0', '0', '0', '0');
-INSERT INTO `persona` VALUES ('1550671413130', '1561300573176', '5', '1', '23123123123', 'Mario Salazar', '170615, Quito Sur', '123123123', 'gasalazaror5@gmail.com', '1', '0', '1', '1', '1', '1');
-INSERT INTO `persona` VALUES ('1563977624126', '1563977624126', '6', '1', '17012345123', 'Erika Ortiz', 'La Ofelia', '2456123', 'ericcaa@gmail.com', '0', '1', '0', '0', '0', '0');
-
--- ----------------------------
--- Table structure for persona_productos__tipoproducto_personas
--- ----------------------------
-DROP TABLE IF EXISTS `persona_productos__tipoproducto_personas`;
-CREATE TABLE `persona_productos__tipoproducto_personas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `persona_productos` int(11) DEFAULT NULL,
-  `tipoproducto_personas` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `id` (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Records of persona_productos__tipoproducto_personas
--- ----------------------------
-INSERT INTO `persona_productos__tipoproducto_personas` VALUES ('11', '5', '3');
-INSERT INTO `persona_productos__tipoproducto_personas` VALUES ('12', '5', '5');
-INSERT INTO `persona_productos__tipoproducto_personas` VALUES ('13', '5', '5');
+INSERT INTO `persona` VALUES ('1566869835303', '1566869835303', '1', '1', '1723713556', 'Gabriel Salazar', 'Ciudadela Quito Sur', '2621561', 'gasalazaror@gmail.com', '0', '1', '1', '0', '0', '0');
+INSERT INTO `persona` VALUES ('1566870174398', '1566870186514', '3', '1', '1707385975', 'Erika Ortiz', 'Ciudadela Ibarra', '2621561', 'ericckaa95@gmail.com', '0', '1', '1', '0', '0', '0');
+INSERT INTO `persona` VALUES ('1566870373769', '1566870373769', '4', '1', '1726439415', 'Mario Cardenas', 'La Cardenal', '272161', 'mcardenas@gmail.com', '1', '0', '0', '0', '0', '0');
 
 -- ----------------------------
 -- Table structure for producto
@@ -387,19 +361,19 @@ CREATE TABLE `producto` (
   `nombre` varchar(255) DEFAULT NULL,
   `descripcion` varchar(255) DEFAULT NULL,
   `iva` varchar(255) DEFAULT NULL,
-  `ice` varchar(255) DEFAULT NULL,
   `pvp_manual` tinyint(1) DEFAULT NULL,
   `categoria` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `codigo` (`codigo`),
-  UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+  UNIQUE KEY `nombre` (`nombre`),
+  KEY `categoria` (`categoria`),
+  CONSTRAINT `categoria` FOREIGN KEY (`categoria`) REFERENCES `categoria` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of producto
 -- ----------------------------
-INSERT INTO `producto` VALUES ('1563549968751', '1563549968751', '9', '1', '2123', 'Cambio de aceite', '', '12', 'NAP', '1', '1');
 
 -- ----------------------------
 -- Table structure for tipo
@@ -414,13 +388,13 @@ CREATE TABLE `tipo` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of tipo
 -- ----------------------------
-INSERT INTO `tipo` VALUES ('1563549767309', '1563549767309', '3', '1', 'Motocicleta');
-INSERT INTO `tipo` VALUES ('1563549780535', '1563549780535', '4', '1', 'Vehiculo 4x4');
+INSERT INTO `tipo` VALUES ('1566870225719', '1566870225719', '1', '1', 'Motocicleta');
+INSERT INTO `tipo` VALUES ('1566870247854', '1566870247854', '2', '1', 'Vehículo 4x4');
 
 -- ----------------------------
 -- Table structure for tipoproducto
@@ -436,34 +410,16 @@ CREATE TABLE `tipoproducto` (
   `tipo` int(11) DEFAULT NULL,
   `producto` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+  UNIQUE KEY `id` (`id`),
+  KEY `tipo` (`tipo`),
+  KEY `producto` (`producto`),
+  CONSTRAINT `producto` FOREIGN KEY (`producto`) REFERENCES `producto` (`id`),
+  CONSTRAINT `tipo` FOREIGN KEY (`tipo`) REFERENCES `tipo` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of tipoproducto
 -- ----------------------------
-INSERT INTO `tipoproducto` VALUES ('1563549969672', '1563549969672', '11', '15', '1', '3600', '3', '9');
-INSERT INTO `tipoproducto` VALUES ('1563549969675', '1563549969675', '12', '20', '1', '7200', '4', '9');
-
--- ----------------------------
--- Table structure for unidad
--- ----------------------------
-DROP TABLE IF EXISTS `unidad`;
-CREATE TABLE `unidad` (
-  `createdAt` bigint(20) DEFAULT NULL,
-  `updatedAt` bigint(20) DEFAULT NULL,
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `estado` tinyint(1) DEFAULT NULL,
-  `nombre` varchar(255) COLLATE utf8_spanish_ci DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `id` (`id`) USING BTREE,
-  UNIQUE KEY `nombre` (`nombre`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Records of unidad
--- ----------------------------
-INSERT INTO `unidad` VALUES ('1548708760107', '1548708760107', '1', '1', 'unidad');
 
 -- ----------------------------
 -- Table structure for usuario
@@ -481,15 +437,15 @@ CREATE TABLE `usuario` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `email` (`email`),
-  UNIQUE KEY `persona` (`persona`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+  UNIQUE KEY `persona` (`persona`),
+  CONSTRAINT `persona` FOREIGN KEY (`persona`) REFERENCES `persona` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of usuario
 -- ----------------------------
-INSERT INTO `usuario` VALUES ('1548955679112', '1564003938216', '1', '1', 'gasalazaror@gmail.com', '$2b$10$xH.wcokpiXA959OCNBgXf.vG08JcpQXAQGFtGfFK1b01QhgdLW18O', 'cmlqaheqarU:APA91bH0vbDzFDeOxGHi6wZyJjMbIoQ0IV7bLhJ4BE3irv9OoWS8k23eBFM4PxtHZ274aYDPVF21QfAtfoFDcJwalMPAv5A758_VUfPxA1T8_NsBTnTZyURlr8e3N37duSVcP4aNZsiP', '2');
-INSERT INTO `usuario` VALUES ('1552104522001', '1564004223745', '2', '1', 'gasalazaror5@gmail.com', '$2b$10$xH.wcokpiXA959OCNBgXf.vG08JcpQXAQGFtGfFK1b01QhgdLW18O', 'cjXg-hSfLLI:APA91bFOTbOGCsiin6cSeduMZR_M3jkikzNPB9iDNguRMqYnodnwj7htsgniVvHegxYX_1Bv3To8SzU7Pnq70b8pDQ_BbZsHX6C1hNVyTU1y35W50DHtRb09LSchX0VzcM_bVNLGgfMo', '5');
-INSERT INTO `usuario` VALUES ('1563977639808', '1563977639808', '3', '1', 'ericcaa@gmail.com', '$2b$10$TDHTh5bmVzpftRZEDc/PdezUX23TTN5QuPpL2M/Jzo5XYZcGtbKtS', '', '6');
+INSERT INTO `usuario` VALUES ('1566870066794', '1566870066794', '1', '1', 'gasalazaror@gmail.com', '$2b$10$DwyYW573wYgHF8ah8C93s.PuhcoHZGB..zZ.fXOueDA6kqrizkTgC', '', '1');
+INSERT INTO `usuario` VALUES ('1566870183175', '1566870183175', '2', '1', 'ericckaa95@gmail.com', '$2b$10$juD9UJFuxBnO7P/HcAmc0et0fLJRi5vSgblLz9N7V8zOqyeqQpiHa', '', '3');
 
 -- ----------------------------
 -- Table structure for vehiculo
@@ -508,33 +464,29 @@ CREATE TABLE `vehiculo` (
   `propietario` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
-  UNIQUE KEY `placa` (`placa`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+  UNIQUE KEY `placa` (`placa`),
+  KEY `modelo` (`modelo`),
+  KEY `propietario` (`propietario`),
+  CONSTRAINT `modelo` FOREIGN KEY (`modelo`) REFERENCES `modelo` (`id`),
+  CONSTRAINT `propietario` FOREIGN KEY (`propietario`) REFERENCES `persona` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of vehiculo
 -- ----------------------------
-INSERT INTO `vehiculo` VALUES ('1563550016152', '1563550016152', '6', '1', 'ABC123', '321321321', '321321', '1992', '4', '4');
-INSERT INTO `vehiculo` VALUES ('1563550044948', '1563550044948', '7', '1', 'BCD231', '3231', '1321', '1990', '3', '4');
+INSERT INTO `vehiculo` VALUES ('1566870412453', '1566870412453', '1', '1', 'abc123', '123123', '123123123', '1998', '1', '4');
 
 -- ----------------------------
 -- View structure for rgterger
 -- ----------------------------
 DROP VIEW IF EXISTS `rgterger`;
-CREATE VIEW `rgterger` AS select `asignacion`.`estado` AS `estado`,`asignacion`.`aprobado` AS `aprobado` from `asignacion` ;
-
-DROP VIEW IF EXISTS `vista_pausas`;
-CREATE   VIEW `vista_pausas` AS select `pausa`.`id` AS `id`,`pausa`.`asignacion` AS `asignacion`,time_to_sec(timediff(cast(convert_tz(from_unixtime((`pausa`.`hora_finalizacion` / 1000)),'UTC','MST') as datetime),cast(convert_tz(from_unixtime((`pausa`.`hora_inicio` / 1000)),'UTC','MST') as datetime))) AS `diferencia` from `pausa` ;
-
-DROP VIEW IF EXISTS `vista_diferencia`;
-CREATE   VIEW `vista_diferencia` AS select `asignacion`.`id` AS `id`,time_to_sec(timediff(cast(convert_tz(from_unixtime((`asignacion`.`hora_finalizacion` / 1000)),'UTC','MST') as datetime),cast(convert_tz(from_unixtime((`asignacion`.`hora_inicio_real` / 1000)),'UTC','MST') as datetime))) AS `diferencia` from `asignacion` ;
-
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `rgterger` AS select `asignacion`.`estado` AS `estado`,`asignacion`.`aprobado` AS `aprobado` from `asignacion` ; ;
 
 -- ----------------------------
 -- View structure for vista_asignaciones
 -- ----------------------------
 DROP VIEW IF EXISTS `vista_asignaciones`;
-CREATE   VIEW `vista_asignaciones` AS SELECT
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `vista_asignaciones` AS SELECT
 	`ordentrabajo`.`cliente` AS `cliente`,
 	`asignacion`.`id` AS `id`,
 	`persona`.`nombre` AS `nombre`,
@@ -680,30 +632,34 @@ FROM
 			)
 		)
 JOIN vehiculo ON vehiculo.id = ordentrabajo.vehiculo
-	) ;
+	) ; ;
 
 -- ----------------------------
 -- View structure for vista_carrito
 -- ----------------------------
 DROP VIEW IF EXISTS `vista_carrito`;
-CREATE  VIEW `vista_carrito` AS select `carrito`.`id` AS `id`,`persona`.`id` AS `idPersona`,`tipoproducto`.`tiempoEstandar` AS `tiempoEstandar`,`tipoproducto`.`tiempoEstandar` AS `tiempo_estandar`,`tipoproducto`.`pvp` AS `pvp`,`tipoproducto`.`pvp` AS `precio`,`producto`.`iva` AS `porsentaje_iva`,`tipo`.`id` AS `variante`,`producto`.`nombre` AS `producto`,`vehiculo`.`placa` AS `placa` from (((((`carrito` join `persona` on((`persona`.`id` = `carrito`.`persona`))) join `tipoproducto` on((`tipoproducto`.`id` = `carrito`.`tipoProducto`))) join `tipo` on((`tipoproducto`.`tipo` = `tipo`.`id`))) join `producto` on((`producto`.`id` = `tipoproducto`.`producto`))) left join `vehiculo` on((`vehiculo`.`id` = `carrito`.`vehiculo`))) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `vista_carrito` AS select `carrito`.`id` AS `id`,`persona`.`id` AS `idPersona`,`tipoproducto`.`tiempoEstandar` AS `tiempoEstandar`,`tipoproducto`.`tiempoEstandar` AS `tiempo_estandar`,`tipoproducto`.`pvp` AS `pvp`,`tipoproducto`.`pvp` AS `precio`,`producto`.`iva` AS `porsentaje_iva`,`tipo`.`id` AS `variante`,`producto`.`nombre` AS `producto`,`vehiculo`.`placa` AS `placa` from (((((`carrito` join `persona` on((`persona`.`id` = `carrito`.`persona`))) join `tipoproducto` on((`tipoproducto`.`id` = `carrito`.`tipoProducto`))) join `tipo` on((`tipoproducto`.`tipo` = `tipo`.`id`))) join `producto` on((`producto`.`id` = `tipoproducto`.`producto`))) left join `vehiculo` on((`vehiculo`.`id` = `carrito`.`vehiculo`))) ; ;
 
 -- ----------------------------
 -- View structure for vista_cotizaciones
 -- ----------------------------
 DROP VIEW IF EXISTS `vista_cotizaciones`;
-CREATE VIEW `vista_cotizaciones` AS select `cotizacionproducto`.`id` AS `id`,`cotizacion`.`id` AS `cotizacion`,`cotizacionproducto`.`cantidad` AS `cantidad`,`producto`.`id` AS `id_producto`,`producto`.`nombre` AS `producto`,`tipoproducto`.`id` AS `id_variante`,`tipo`.`nombre` AS `variante`,`cotizacionproducto`.`porsentaje_iva` AS `porsentaje_iva`,`cotizacionproducto`.`porcentaje_descuento` AS `porcentaje_descuento`,`cotizacionproducto`.`precio` AS `precio` from ((((`cotizacionproducto` join `tipoproducto` on((`cotizacionproducto`.`variante` = `tipoproducto`.`id`))) join `cotizacion` on((`cotizacion`.`id` = `cotizacionproducto`.`cotizacion`))) join `producto` on((`producto`.`id` = `tipoproducto`.`producto`))) join `tipo` on((`tipo`.`id` = `tipoproducto`.`tipo`))) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `vista_cotizaciones` AS select `cotizacionproducto`.`id` AS `id`,`cotizacion`.`id` AS `cotizacion`,`cotizacionproducto`.`cantidad` AS `cantidad`,`producto`.`id` AS `id_producto`,`producto`.`nombre` AS `producto`,`tipoproducto`.`id` AS `id_variante`,`tipo`.`nombre` AS `variante`,`cotizacionproducto`.`porsentaje_iva` AS `porsentaje_iva`,`cotizacionproducto`.`porcentaje_descuento` AS `porcentaje_descuento`,`cotizacionproducto`.`precio` AS `precio` from ((((`cotizacionproducto` join `tipoproducto` on((`cotizacionproducto`.`variante` = `tipoproducto`.`id`))) join `cotizacion` on((`cotizacion`.`id` = `cotizacionproducto`.`cotizacion`))) join `producto` on((`producto`.`id` = `tipoproducto`.`producto`))) join `tipo` on((`tipo`.`id` = `tipoproducto`.`tipo`))) ; ;
 
 -- ----------------------------
 -- View structure for vista_diferencia
 -- ----------------------------
+DROP VIEW IF EXISTS `vista_diferencia`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `vista_diferencia` AS select `asignacion`.`id` AS `id`,time_to_sec(timediff(cast(convert_tz(from_unixtime((`asignacion`.`hora_finalizacion` / 1000)),'UTC','MST') as datetime),cast(convert_tz(from_unixtime((`asignacion`.`hora_inicio_real` / 1000)),'UTC','MST') as datetime))) AS `diferencia` from `asignacion` ; ;
 
 -- ----------------------------
 -- View structure for vista_ordenes
 -- ----------------------------
 DROP VIEW IF EXISTS `vista_ordenes`;
-CREATE   VIEW `vista_ordenes` AS select `ordenproducto`.`id` AS `id`,`ordentrabajo`.`id` AS `orden`,`ordenproducto`.`cantidad` AS `cantidad`,`producto`.`id` AS `id_producto`,`producto`.`nombre` AS `producto`,`tipoproducto`.`id` AS `id_variante`,`tipo`.`nombre` AS `variante`,`ordenproducto`.`porsentaje_iva` AS `porsentaje_iva`,`ordenproducto`.`porcentaje_descuento` AS `porcentaje_descuento`,`ordenproducto`.`tiempo_estandar` AS `tiempo_estandar`,`ordenproducto`.`precio` AS `precio`,(select `vista_asignaciones`.`hora_inicio` from `vista_asignaciones` where (`vista_asignaciones`.`id_ordenproducto` = `ordenproducto`.`id`)) AS `hora_inicio` from ((((`ordenproducto` join `tipoproducto` on((`ordenproducto`.`variante` = `tipoproducto`.`id`))) join `ordentrabajo` on((`ordentrabajo`.`id` = `ordenproducto`.`orden`))) join `producto` on((`producto`.`id` = `tipoproducto`.`producto`))) join `tipo` on((`tipo`.`id` = `tipoproducto`.`tipo`))) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `vista_ordenes` AS select `ordenproducto`.`id` AS `id`,`ordentrabajo`.`id` AS `orden`,`ordenproducto`.`cantidad` AS `cantidad`,`producto`.`id` AS `id_producto`,`producto`.`nombre` AS `producto`,`tipoproducto`.`id` AS `id_variante`,`tipo`.`nombre` AS `variante`,`ordenproducto`.`porsentaje_iva` AS `porsentaje_iva`,`ordenproducto`.`porcentaje_descuento` AS `porcentaje_descuento`,`ordenproducto`.`tiempo_estandar` AS `tiempo_estandar`,`ordenproducto`.`precio` AS `precio`,(select `vista_asignaciones`.`hora_inicio` from `vista_asignaciones` where (`vista_asignaciones`.`id_ordenproducto` = `ordenproducto`.`id`)) AS `hora_inicio` from ((((`ordenproducto` join `tipoproducto` on((`ordenproducto`.`variante` = `tipoproducto`.`id`))) join `ordentrabajo` on((`ordentrabajo`.`id` = `ordenproducto`.`orden`))) join `producto` on((`producto`.`id` = `tipoproducto`.`producto`))) join `tipo` on((`tipo`.`id` = `tipoproducto`.`tipo`))) ; ;
 
 -- ----------------------------
 -- View structure for vista_pausas
 -- ----------------------------
+DROP VIEW IF EXISTS `vista_pausas`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `vista_pausas` AS select `pausa`.`id` AS `id`,`pausa`.`asignacion` AS `asignacion`,time_to_sec(timediff(cast(convert_tz(from_unixtime((`pausa`.`hora_finalizacion` / 1000)),'UTC','MST') as datetime),cast(convert_tz(from_unixtime((`pausa`.`hora_inicio` / 1000)),'UTC','MST') as datetime))) AS `diferencia` from `pausa` ; ;
