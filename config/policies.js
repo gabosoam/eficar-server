@@ -1,7 +1,7 @@
 
 module.exports.policies = {
 
- // '*': 'esta_logueado',
+  '*': 'esta_logueado',
   'usuario/login': true
 
 };

@@ -27,6 +27,10 @@ module.exports = {
     hora_inicio_real: {
       type: 'string'
     },
+
+    eficiencia: {
+      type: 'string'
+    },
     hora_finalizacion: {
       type: 'string'
     },

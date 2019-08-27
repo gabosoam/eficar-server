@@ -10,7 +10,7 @@ Target Server Type    : MariaDB
 Target Server Version : 100407
 File Encoding         : 65001
 
-Date: 2019-08-26 21:12:22
+Date: 2019-08-27 01:56:53
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -48,17 +48,26 @@ CREATE TABLE `asignacion` (
   `hora_finalizacion` varchar(255) DEFAULT NULL,
   `tarea` int(11) DEFAULT NULL,
   `operador` int(11) DEFAULT NULL,
+  `eficiencia` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `tarea` (`tarea`),
   KEY `operador` (`operador`),
   CONSTRAINT `operador` FOREIGN KEY (`operador`) REFERENCES `persona` (`id`),
   CONSTRAINT `tarea` FOREIGN KEY (`tarea`) REFERENCES `ordenproducto` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of asignacion
 -- ----------------------------
+INSERT INTO `asignacion` VALUES ('1566875531775', '1566886268182', '1', '4', '1', '2019-8-27 9:0:0', '1566886280306', '1566886285962', '1', '1', '0');
+INSERT INTO `asignacion` VALUES ('1566879899878', '1566881224868', '2', '4', '1', '2019-8-27 7:0:0', '1566882140678', '1566884580645', '2', '1', '20');
+INSERT INTO `asignacion` VALUES ('1566887332667', '1566887378725', '3', '4', '1', '2019-8-27 11:0:0', '1566887397458', '1566887750274', '3', '1', '17600');
+INSERT INTO `asignacion` VALUES ('1566887896009', '1566888309122', '4', '4', '1', '2019-8-27 11:30:0', '1566888326436', '1566888343166', '4', '1', '13');
+INSERT INTO `asignacion` VALUES ('1566888054541', '1566888068509', '5', '4', '1', '2019-8-27 11:0:2', '1566888080900', '1566888109573', '5', '1', '214');
+INSERT INTO `asignacion` VALUES ('1566888450164', '1566888461525', '6', '4', '1', '2019-8-27 12:0:0', '1566888469643', '1566888491173', '6', '1', '286');
+INSERT INTO `asignacion` VALUES ('1566888621637', '1566888631567', '7', '4', '1', '2019-8-27 12:30:0', '1566888638766', '1566888700935', '7', '1', '97');
+INSERT INTO `asignacion` VALUES ('1566888788386', '1566888798608', '8', '4', '1', '2019-8-27 13:0:0', '1566888877346', '1566888921130', '8', '1', '140');
 
 -- ----------------------------
 -- Table structure for carrito
@@ -96,11 +105,13 @@ CREATE TABLE `categoria` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of categoria
 -- ----------------------------
+INSERT INTO `categoria` VALUES ('1566872301083', '1566872301083', '1', '1', 'categoria');
+INSERT INTO `categoria` VALUES ('1566872314350', '1566872314350', '2', '1', 'categoria 2');
 
 -- ----------------------------
 -- Table structure for cotizacion
@@ -233,11 +244,13 @@ CREATE TABLE `motivo` (
   `descripcion` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of motivo
 -- ----------------------------
+INSERT INTO `motivo` VALUES ('1566882229100', '1566882229100', '1', '1', 'Almuerzo');
+INSERT INTO `motivo` VALUES ('1566882242236', '1566882242236', '2', '1', 'Fin jornada laboral');
 
 -- ----------------------------
 -- Table structure for ordenproducto
@@ -262,11 +275,19 @@ CREATE TABLE `ordenproducto` (
   KEY `variante` (`variante`),
   CONSTRAINT `orden` FOREIGN KEY (`orden`) REFERENCES `ordentrabajo` (`id`),
   CONSTRAINT `variante` FOREIGN KEY (`variante`) REFERENCES `tipoproducto` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of ordenproducto
 -- ----------------------------
+INSERT INTO `ordenproducto` VALUES ('1566875531694', '1566875531694', '1', '12', '1', '233', '7200', '0', '', '0', '1', '2');
+INSERT INTO `ordenproducto` VALUES ('1566879899730', '1566879899730', '2', '12', '1', '233', '7200', '0', '', '0', '2', '2');
+INSERT INTO `ordenproducto` VALUES ('1566887332573', '1566887332573', '3', '12', '1', '1', '2', '0', '', '0', '3', '3');
+INSERT INTO `ordenproducto` VALUES ('1566887895899', '1566887895899', '4', '12', '1', '1', '2', '0', '', '0', '4', '3');
+INSERT INTO `ordenproducto` VALUES ('1566888054428', '1566888054428', '5', '12', '1', '1', '60', '0', '', '0', '5', '3');
+INSERT INTO `ordenproducto` VALUES ('1566888450085', '1566888450085', '6', '12', '1', '1', '60', '0', '', '0', '6', '3');
+INSERT INTO `ordenproducto` VALUES ('1566888621556', '1566888621556', '7', '12', '1', '1', '60', '0', '', '0', '7', '3');
+INSERT INTO `ordenproducto` VALUES ('1566888788274', '1566888788274', '8', '12', '1', '1', '60', '0', '', '0', '8', '3');
 
 -- ----------------------------
 -- Table structure for ordentrabajo
@@ -286,11 +307,19 @@ CREATE TABLE `ordentrabajo` (
   KEY `vehiculo` (`vehiculo`),
   CONSTRAINT `cliente` FOREIGN KEY (`cliente`) REFERENCES `persona` (`id`),
   CONSTRAINT `vehiculo` FOREIGN KEY (`vehiculo`) REFERENCES `vehiculo` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of ordentrabajo
 -- ----------------------------
+INSERT INTO `ordentrabajo` VALUES ('1566875531643', '1566875531643', '1', '2019-08-26 22:12:11.643', '4', '1', null);
+INSERT INTO `ordentrabajo` VALUES ('1566879899529', '1566879899529', '2', '2019-08-26 23:24:59.550', '4', '1', null);
+INSERT INTO `ordentrabajo` VALUES ('1566887332491', '1566887332491', '3', '2019-08-27 01:28:52.491', '4', '1', null);
+INSERT INTO `ordentrabajo` VALUES ('1566887895813', '1566887895813', '4', '2019-08-27 01:38:15.816', '4', '1', null);
+INSERT INTO `ordentrabajo` VALUES ('1566888054364', '1566888054364', '5', '2019-08-27 01:40:54.365', '4', '1', null);
+INSERT INTO `ordentrabajo` VALUES ('1566888449989', '1566888449989', '6', '2019-08-27 01:47:29.991', '4', '1', null);
+INSERT INTO `ordentrabajo` VALUES ('1566888621500', '1566888621500', '7', '2019-08-27 01:50:21.500', '4', '1', null);
+INSERT INTO `ordentrabajo` VALUES ('1566888788216', '1566888788216', '8', '2019-08-27 01:53:08.216', '4', '1', null);
 
 -- ----------------------------
 -- Table structure for pausa
@@ -310,11 +339,21 @@ CREATE TABLE `pausa` (
   KEY `motivo` (`motivo`),
   CONSTRAINT `asignacion` FOREIGN KEY (`asignacion`) REFERENCES `asignacion` (`id`),
   CONSTRAINT `motivo` FOREIGN KEY (`motivo`) REFERENCES `motivo` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of pausa
 -- ----------------------------
+INSERT INTO `pausa` VALUES (null, null, '1', '1566883197262', '1566883208186', '2', '2');
+INSERT INTO `pausa` VALUES (null, null, '2', '1566883216085', '1566883222885', '2', '2');
+INSERT INTO `pausa` VALUES (null, null, '3', '1566883232284', '1566883307678', '2', '1');
+INSERT INTO `pausa` VALUES (null, null, '4', '1566883315052', '1566883586912', '2', '2');
+INSERT INTO `pausa` VALUES (null, null, '5', '1566883590936', '1566884021975', '2', '1');
+INSERT INTO `pausa` VALUES (null, null, '6', '1566884026686', '1566884032516', '2', '2');
+INSERT INTO `pausa` VALUES (null, null, '7', '1566884037953', '1566884145926', '2', '1');
+INSERT INTO `pausa` VALUES (null, null, '8', '1566884290852', '1566884336475', '2', '2');
+INSERT INTO `pausa` VALUES (null, null, '9', '1566884355196', '1566884360544', '2', '2');
+INSERT INTO `pausa` VALUES ('1566884421388', '1566884421388', '10', '1566884380068', '1566884421387', '2', null);
 
 -- ----------------------------
 -- Table structure for persona
@@ -339,14 +378,15 @@ CREATE TABLE `persona` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `identificacion` (`identificacion`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of persona
 -- ----------------------------
-INSERT INTO `persona` VALUES ('1566869835303', '1566869835303', '1', '1', '1723713556', 'Gabriel Salazar', 'Ciudadela Quito Sur', '2621561', 'gasalazaror@gmail.com', '0', '1', '1', '0', '0', '0');
+INSERT INTO `persona` VALUES ('1566869835303', '1566876639848', '1', '1', '1723713556', 'Gabriel Salazar', 'Ciudadela Quito Sur', '2621561', 'gasalazaror@gmail.com', '0', '1', '1', '0', '0', '1');
 INSERT INTO `persona` VALUES ('1566870174398', '1566870186514', '3', '1', '1707385975', 'Erika Ortiz', 'Ciudadela Ibarra', '2621561', 'ericckaa95@gmail.com', '0', '1', '1', '0', '0', '0');
 INSERT INTO `persona` VALUES ('1566870373769', '1566870373769', '4', '1', '1726439415', 'Mario Cardenas', 'La Cardenal', '272161', 'mcardenas@gmail.com', '1', '0', '0', '0', '0', '0');
+INSERT INTO `persona` VALUES ('1566876371585', '1566876377438', '7', '1', '213', 'gabo', '23123', '23123', '21312@gmail.com', '0', '1', '0', '0', '0', '1');
 
 -- ----------------------------
 -- Table structure for producto
@@ -369,11 +409,13 @@ CREATE TABLE `producto` (
   UNIQUE KEY `nombre` (`nombre`),
   KEY `categoria` (`categoria`),
   CONSTRAINT `categoria` FOREIGN KEY (`categoria`) REFERENCES `categoria` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of producto
 -- ----------------------------
+INSERT INTO `producto` VALUES ('1566875513951', '1566875513951', '1', '1', '123123', 'Servicio 1', '', '12', '1', '1');
+INSERT INTO `producto` VALUES ('1566887299484', '1566888585993', '2', '1', '13213', 'Sercivio2', '', '12', '1', '1');
 
 -- ----------------------------
 -- Table structure for tipo
@@ -415,11 +457,15 @@ CREATE TABLE `tipoproducto` (
   KEY `producto` (`producto`),
   CONSTRAINT `producto` FOREIGN KEY (`producto`) REFERENCES `producto` (`id`),
   CONSTRAINT `tipo` FOREIGN KEY (`tipo`) REFERENCES `tipo` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of tipoproducto
 -- ----------------------------
+INSERT INTO `tipoproducto` VALUES ('1566875514087', '1566875514087', '1', '23', '1', '3600', '1', '1');
+INSERT INTO `tipoproducto` VALUES ('1566875514095', '1566875514095', '2', '233', '1', '7200', '2', '1');
+INSERT INTO `tipoproducto` VALUES ('1566887299612', '1566888586112', '3', '1', '1', '60', '2', '2');
+INSERT INTO `tipoproducto` VALUES ('1566887299619', '1566888586115', '4', '1', '1', '60', '1', '2');
 
 -- ----------------------------
 -- Table structure for usuario
@@ -439,13 +485,14 @@ CREATE TABLE `usuario` (
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `persona` (`persona`),
   CONSTRAINT `persona` FOREIGN KEY (`persona`) REFERENCES `persona` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of usuario
 -- ----------------------------
-INSERT INTO `usuario` VALUES ('1566870066794', '1566870066794', '1', '1', 'gasalazaror@gmail.com', '$2b$10$DwyYW573wYgHF8ah8C93s.PuhcoHZGB..zZ.fXOueDA6kqrizkTgC', '', '1');
+INSERT INTO `usuario` VALUES ('1566870066794', '1566887750600', '1', '1', 'gasalazaror@gmail.com', '$2b$10$DwyYW573wYgHF8ah8C93s.PuhcoHZGB..zZ.fXOueDA6kqrizkTgC', '', '1');
 INSERT INTO `usuario` VALUES ('1566870183175', '1566870183175', '2', '1', 'ericckaa95@gmail.com', '$2b$10$juD9UJFuxBnO7P/HcAmc0et0fLJRi5vSgblLz9N7V8zOqyeqQpiHa', '', '3');
+INSERT INTO `usuario` VALUES ('1566876658902', '1566882029813', '3', '1', 'mcardenas@gmail.com', '$2b$10$gSKm2HhI0Xa5.lQzaB2Wce7Upvop4ZVOjQrzYbhdrRxSSU2b0rnEC', 'fnDPsBNP_FA:APA91bFaayjPuKdDSqrxtv-2_9yw64zeTthvQH1h-HaIdT8YC45_1tsZycuOBZ2nVo4u8nD98D7cxgUNBw8t_sMQ6FBpEIFhWtDb4mzQCyJgK7PR74aHnTCkEmA40W9yBF2u-cscvi_r', '4');
 
 -- ----------------------------
 -- Table structure for vehiculo
@@ -486,7 +533,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `rgterger` AS select
 -- View structure for vista_asignaciones
 -- ----------------------------
 DROP VIEW IF EXISTS `vista_asignaciones`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `vista_asignaciones` AS SELECT
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER  VIEW `vista_asignaciones` AS SELECT
 	`ordentrabajo`.`cliente` AS `cliente`,
 	`asignacion`.`id` AS `id`,
 	`persona`.`nombre` AS `nombre`,
@@ -500,37 +547,7 @@ vehiculo.placa,
 	`ordenproducto`.`id` AS `id_ordenproducto`,
 	`asignacion`.`aprobado` AS `aprobado`,
 	`asignacion`.`estado` AS `estado`,
-	format(
-		(
-			(
-				`ordenproducto`.`tiempo_estandar` / (
-					(
-						SELECT
-							`vista_diferencia`.`diferencia`
-						FROM
-							`vista_diferencia`
-						WHERE
-							(
-								`vista_diferencia`.`id` = `asignacion`.`id`
-							)
-						LIMIT 1
-					) - (
-						SELECT
-							sum(
-								`vista_pausas`.`diferencia`
-							)
-						FROM
-							`vista_pausas`
-						WHERE
-							(
-								`vista_pausas`.`asignacion` = `asignacion`.`id`
-							)
-					)
-				)
-			) * 100
-		),
-		2
-	) AS `eficiencia`,
+	asignacion.eficiencia AS `eficiencia`,
 	`producto`.`nombre` AS `producto`,
 	`tipo`.`nombre` AS `variante`,
 	`asignacion`.`hora_inicio` AS `hora_inicio`,
@@ -562,32 +579,8 @@ vehiculo.placa,
 			)
 		LIMIT 1
 	) AS `id_pausa`,
-	(
-		SELECT
-			`motivo`.`descripcion`
-		FROM
-			`motivo`
-		WHERE
-			(
-				`motivo`.`id` = (
-					SELECT
-						`pausa`.`id`
-					FROM
-						`pausa`
-					WHERE
-						(
-							(
-								`pausa`.`asignacion` = `asignacion`.`id`
-							)
-							AND isnull(
-								`pausa`.`hora_finalizacion`
-							)
-						)
-					LIMIT 1
-				)
-			)
-		LIMIT 1
-	) AS `motivo_pausa`
+
+(SELECT descripcion FROM motivo WHERE id = (SELECT motivo FROM pausa WHERE asignacion = asignacion.id AND ISNULL(hora_finalizacion) LIMIT 1)) as motivo_pausa
 FROM
 	(
 		(
@@ -632,7 +625,7 @@ FROM
 			)
 		)
 JOIN vehiculo ON vehiculo.id = ordentrabajo.vehiculo
-	) ; ;
+	) ;
 
 -- ----------------------------
 -- View structure for vista_carrito

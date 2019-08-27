@@ -6,6 +6,7 @@
  */
 
 const firebase = require('../firebase/firebase');
+const moment = require('moment')
 
 module.exports = {
 
@@ -68,7 +69,7 @@ module.exports = {
   operadores: async function (req, res) {
     var date = req.query.date;
 
-    var sql = "SELECT id,estado,identificacion,nombre,direccion,telefono,email, (SELECT COUNT(*)FROM asignacion WHERE operador = persona.id AND DATE(asignacion.hora_inicio) = DATE('"+date+"')) as count FROM persona where es_empleado = 1 AND es_operador=1 and estado =1 ORDER BY count";
+    var sql = "SELECT id,estado,identificacion,nombre,direccion,telefono,email, (SELECT COUNT(*)FROM asignacion WHERE operador = persona.id AND DATE(asignacion.hora_inicio) = DATE('" + date + "')) as count FROM persona where es_empleado = 1 AND es_operador=1 and estado =1 ORDER BY count";
 
     var rawResult = await sails.sendNativeQuery(sql);
 
@@ -147,15 +148,49 @@ module.exports = {
         return false
       })
 
-   
+
 
     res.send(rawResult);
   },
 
   aprobarTarea: async function (req, res) {
     var asignacion = req.query.asignacion
-    var sql = 'UPDATE asignacion SET aprobado = 1 WHERE id = $1 AND estado = 4 AND aprobado = 0'
-    var rawResult = await sails.sendNativeQuery(sql, [asignacion]);
+
+
+    var record = await Asignacion.findOne({ id: asignacion }).populate('pausas').populate('tarea');
+
+
+    var inicio = moment.unix(record.hora_inicio_real / 1000);
+    var fin = moment.unix(record.hora_finalizacion / 1000);
+
+    var tiempo1 = fin.diff(inicio, 'seconds')
+
+    var tiempoPausas = 0
+
+    if (record.pausas) {
+      record.pausas.forEach(pausa => {
+        if (pausa.hora_inicio && pausa.hora_finalizacion) {
+          var inicioPausa = moment.unix(pausa.hora_inicio / 1000);
+          var finPausa = moment.unix(pausa.hora_finalizacion / 1000)
+
+          var tiempopausa = finPausa.diff(inicioPausa, 'seconds');
+
+          tiempoPausas += tiempopausa
+        }
+      });
+    }
+
+    var tiempoTotal = tiempo1 - tiempoPausas
+
+    var eficiencia =  record.tarea.tiempo_estandar / tiempoTotal  * 100
+
+
+
+
+
+
+    var sql = 'UPDATE asignacion SET aprobado = 1, eficiencia = $1 WHERE id = $2 AND estado = 4 AND aprobado = 0'
+    var rawResult = await sails.sendNativeQuery(sql, [eficiencia.toFixed(0), asignacion]);
 
     var sql2 = 'select * from  vista_asignaciones where id = $1 LIMIT 1'
     var rawResult2 = await sails.sendNativeQuery(sql2, [asignacion]);
@@ -191,14 +226,14 @@ module.exports = {
     var asignacion = req.query.asignacion
     var sql = 'UPDATE asignacion SET estado = 2 WHERE id = $1 AND estado = 4 AND aprobado = 0'
     var rawResult = await sails.sendNativeQuery(sql, [asignacion]);
-    
+
     var sql2 = 'select * from  vista_asignaciones where id = $1 LIMIT 1'
     var rawResult2 = await sails.sendNativeQuery(sql2, [asignacion]);
     var asg = rawResult2.rows[0]
 
+    var pausaCreated = await Pausa.create({ hora_inicio: asg.hora_finalizacion, hora_finalizacion: Date.now(), asignacion: asignacion }).fetch();
 
-    var pausaCreated = await Pausa.create({hora_inicio : asg.hora_finalizacion, hora_finalizacion: Date.now(), asignacion: asignacion}).fetch();
-
+    sails.sockets.blast('Received message', { data: {} });
     res.send(rawResult);
   },
 
